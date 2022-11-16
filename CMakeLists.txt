@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.15)
 
 option(MSDFGEN_CORE_ONLY "Only build the core library with no dependencies" OFF)
 option(MSDFGEN_BUILD_STANDALONE "Build the msdfgen standalone executable" ON)
-option(MSDFGEN_USE_OPENMP "Build with OpenMP support for multithreaded code" OFF)
+option(MSDFGEN_USE_OPENMP "Build with OpenMP support for multithreaded code" ON)
 option(MSDFGEN_USE_CPP11 "Build with C++11 enabled" ON)
-option(MSDFGEN_USE_SKIA "Build with the Skia library" OFF)
+option(MSDFGEN_USE_SKIA "Build with the Skia library" ON)
 option(MSDFGEN_INSTALL "Generate installation target" ON)
 
 if(MSDFGEN_CORE_ONLY AND MSDFGEN_BUILD_STANDALONE)
@@ -44,7 +44,7 @@ target_include_directories(msdfgen-core INTERFACE
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT msdfgen-core)
 
 if(MSDFGEN_USE_CPP11)
-    target_compile_features(msdfgen-core PUBLIC cxx_std_11)
+    target_compile_features(msdfgen-core PUBLIC cxx_std_17)
     target_compile_definitions(msdfgen-core PUBLIC MSDFGEN_USE_CPP11)
 endif()
 
@@ -74,6 +74,9 @@ if(NOT MSDFGEN_CORE_ONLY)
         find_package(Skia REQUIRED)
         target_compile_definitions(msdfgen-ext PUBLIC MSDFGEN_USE_SKIA)
         target_link_libraries(msdfgen-ext PUBLIC Skia::Skia)
+        if(APPLE)
+            target_link_libraries(msdfgen-ext PUBLIC "-framework CoreFoundation" "-framework CoreGraphics" "-framework CoreText" "-framework CoreServices")
+        endif()
     endif()
 
     add_library(msdfgen-all INTERFACE)
