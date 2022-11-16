@@ -18,4 +18,18 @@ if(WIN32)
         "${CMAKE_CURRENT_LIST_DIR}/include/core"
         "${CMAKE_CURRENT_LIST_DIR}/include/config"
     )
+else()
+    add_library(Skia::Skia STATIC IMPORTED)
+    
+    set_target_properties(Skia::Skia PROPERTIES
+        IMPORTED_LOCATION "${SKIA_LIB_DIR}/out/Static/libskia.a"
+        IMPORTED_LOCATION_DEBUG "${SKIA_LIB_DIR}/out/Static/libskia.a"
+        IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
+    )
+    target_include_directories(Skia::Skia INTERFACE
+        "${SKIA_LIB_DIR}"
+        "${SKIA_LIB_DIR}/include"
+        "${SKIA_LIB_DIR}/include/core"
+        "${SKIA_LIB_DIR}/include/config"
+    )
 endif()
